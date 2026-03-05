@@ -10,8 +10,10 @@
     <link href="./css/premium.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.debug.js" integrity="sha512-per7WBYe3cT9aIDMoF74rYR7wpEDPqyncWqWzBGmJBnhp8H3ZD5fRdTM16IO5ePUEuBlH9DMKF7rHvuazhvDBA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!--<ko.validation-->
+    <!--03  <ko.validation-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout-validation/2.0.4/knockout.validation.min.js"></script>
+    <!--04  <ko.validation-->
+    <script src="./blockui.js"></script>
 </head>
 
 <body id="wrapper">
@@ -45,13 +47,18 @@
                 </div>
                 
                 <div class="mt-4 text-center">
-                    <p class="text-muted-bc small">Don't have an account? <a href="#" class="text-dark fw-bold text-decoration-none" id="toggleRegister">Create one</a></p>
+                    <p class="text-muted-bc small">Don't have an account? 
+                        <a href="#" class="text-dark fw-bold text-decoration-none" id="toggleRegister" data-bind="click: CreateAccount">Create one</a>
+                    </p>
                 </div>
 
                 <!-- Alert container for error states -->
-                <div id="loginAlert" class="alert alert-danger mt-3 d-none" role="alert" >
-                    <!-- Error message injected here -->
+                <div data-bind="if: has_error">
+                    <div id="loginAlert" class="alert alert-danger mt-3" role="alert" >
+                        <span data-bind="text: error"></span>
+                    </div>
                 </div>
+
             </form>
 
             <!-- Register Form mapped to /auth/register (Hidden by default for JS toggling later) -->
@@ -119,7 +126,7 @@
             decorateElementOnModified: true
         });
 
-        function UserLogin(data){
+        function UserLogin(data){ // Ubicación??
             var self = this;
             self.username = ko.observable(data.username);
             self.password = ko.observable(data.username);
@@ -130,29 +137,54 @@
             self.label = ko.observable('Book Circle Login');
             self.username = ko.observable('').extend({ required: true}); // username se vuelve de variable a función dado el observable
             self.password = ko.observable('').extend({ required: true});
+            self.error = ko.observable();
+            console.log(this)
+            self.has_error = ko.computed(() => { // computed funciona como un observable pero se puede evaluar en este caso una función:
+                if(this.error() != undefined) {return true;} // != entonces se infiere que hay un error
+                return false;
+            });
             /*
             self.grouperror.errors = ko.validatedObservable({
                 username: self.username,
                 password: self.password,
             }); video3 min 12:35*/
             
+
             self.Init()
         }
 
-        UserLoginViewModel.prototype.Init = function() {
 
+        UserLoginViewModel.prototype.Init = function() {
             console.log("Welcome to BookCircle");
         };
 
+
+        UserLoginViewModel.prototype.CreateAccount = function (first_argument) {
+            var formLogin = $('#loginForm');
+            var formRegister = $('#registerForm');
+
+            formLogin.fadeOut('fast', (data) => {
+                formRegister.removeClass('d-none').hide().fadeIn('slow');
+            });
+
+        };
+
+
         // función que representa el clic del botón "Sign In" Por medio de los data-bin 
-        UserLoginViewModel.prototype.ClickSignIn = function(event)  {
-            
-            if(!this.username.isValid()) {
-                //this.grouperror.showAllMessages();
+        UserLoginViewModel.prototype.ClickSignIn = function()  {
+            $.blockUI({messsage:null});
+            // 04 crear grupo de validación en el cual el validation capte atm los errores de todo el ViewModel (todos los observables que tengan validación)
+            var erros = ko.validation.group(this);
+            if (errors().length > 0) {
+                errors.showAllMessages();
                 return;
             }
+            // if(!this.username.isValid()) {
+            //     //this.grouperror.showAllMessages();
+            //     return;
+            // }
 
-            if(!this.password.isValid()) {return;}
+            // if(!this.password.isValid()) {return;}
 
             // petición AJAX desde el this
             $.ajax({
@@ -163,12 +195,22 @@
                 "password": this.password()
                 //"password": "PjZtTEdqXLVOGh4"
                 }
-            }).done((data) => {
+            }).done((data) => {  // métodos encadenados mediante una función anónima / .done() regresa un objeto 
                 console.log(data.accessToken)
                 alert('ok')
+                $.unblockUI();
+                
                 localStorage.setItem('token', data.accessToken);
                 
-            }) // métodos encadenados mediante una función anónima / .done() regresa un objeto 
+            }).fail((data)=> {
+                var message = data.responseJSON.detail;
+                // console.log(this.error())
+                // console.log(this.has_error())
+                this.error(message);
+                $.unblockUI();
+                // console.log(this.error())
+                // console.log(this.has_error())
+            });
 
         };
 
