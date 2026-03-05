@@ -66,24 +66,24 @@
                 <h2 class="bc-section-title" >Register</h2>
                 
                 <div class="bc-form-group">
-                    <label for="regFullName" class="bc-label">Full Name</label>
-                    <input type="text" id="regFullName" class="bc-input" placeholder="Jane Doe" required >
+                    <label for="regFullName" class="bc-label" >Full Name</label>
+                    <input type="text" id="regFullName" class="bc-input" placeholder="Jane Doe" required data-bind="textInput: fullname">
                 </div>
                 <div class="bc-form-group">
-                    <label for="regEmail" class="bc-label">Email</label>
-                    <input type="email" id="regEmail" class="bc-input" placeholder="jane@example.com" required >
+                    <label for="regEmail" class="bc-label" >Email</label>
+                    <input type="email" id="regEmail" class="bc-input" placeholder="jane@example.com" required data-bind="textInput: email">
                 </div>
                 <div class="bc-form-group">
-                    <label for="regUsername" class="bc-label">Username</label>
-                    <input type="text" id="regUsername" class="bc-input" placeholder="janedoe99" required >
+                    <label for="regUsername" class="bc-label" >Username</label>
+                    <input type="text" id="regUsername" class="bc-input" placeholder="janedoe99" required data-bind="textInput: username2">
                 </div>
                 <div class="bc-form-group mb-4">
-                    <label for="regPassword" class="bc-label">Password</label>
-                    <input type="password" id="regPassword" class="bc-input" placeholder="Minimum 8 characters" required >
+                    <label for="regPassword" class="bc-label" >Password</label>
+                    <input type="password" id="regPassword" class="bc-input" placeholder="Minimum 8 characters" required data-bind="textInput: password2">
                 </div>
 
                 <div class="d-grid mt-2">
-                    <button type="submit" class="btn-bc-accent" id="registerBtn" >Create Account</button>
+                    <button type="button" class="btn-bc-accent" id="registerBtn" data-bind="click: ClickCreateAccount" >Create Account</button>
                 </div>
                 
                 <div class="mt-4 text-center">
@@ -126,11 +126,11 @@
             decorateElementOnModified: true
         });
 
-        function UserLogin(data){ // Ubicación??
-            var self = this;
-            self.username = ko.observable(data.username);
-            self.password = ko.observable(data.username);
-        }
+        // function UserLogin(data){ // Ubicación??
+        //     var self = this;
+        //     self.username = ko.observable(data.username);
+        //     self.password = ko.observable(data.username);
+        // }
 
         function UserLoginViewModel(){
             var self = this;            
@@ -138,7 +138,6 @@
             self.username = ko.observable('').extend({ required: true}); // username se vuelve de variable a función dado el observable
             self.password = ko.observable('').extend({ required: true});
             self.error = ko.observable();
-            console.log(this)
             self.has_error = ko.computed(() => { // computed funciona como un observable pero se puede evaluar en este caso una función:
                 if(this.error() != undefined) {return true;} // != entonces se infiere que hay un error
                 return false;
@@ -149,8 +148,14 @@
                 password: self.password,
             }); video3 min 12:35*/
             
+            // 05: min2:35
+            self.fullname = ko.observable('').extend({ required: true});
+            self.email = ko.observable('').extend({ required: true, email: true});
+            self.username2 = ko.observable('').extend({ required: true});
+            self.password2 = ko.observable('').extend({ required: true, minLength: 8});
 
             self.Init()
+
         }
 
 
@@ -159,26 +164,72 @@
         };
 
 
-        UserLoginViewModel.prototype.CreateAccount = function (first_argument) {
+        UserLoginViewModel.prototype.CreateAccount = function () {
             var formLogin = $('#loginForm');
             var formRegister = $('#registerForm');
 
             formLogin.fadeOut('fast', (data) => {
                 formRegister.removeClass('d-none').hide().fadeIn('slow');
             });
+        };
+
+        UserLoginViewModel.prototype.ClickCreateAccount = function () {
+            // 05
+            var errors = ko.validation.group({
+                fullname : this.fullname,
+                username2 : this.username2,
+                email : this.email,
+                password2 : this.password2
+            });
+
+            if (errors().length > 0) {
+                errors.showAllMessages();
+                return;
+            }
+            
+            $.blockUI({messsage:null});
+
+            $.ajax({
+                url : 'https://localhost:7196/auth/register',
+                method : 'POST',
+                contentType: 'application/json',
+                data : JSON.stringify({
+                    email: this.email(),
+                    username: this.username2(),
+                    password: this.password2(),
+                    fullname: this.fullname()
+                })
+            }).done((data) => {  // métodos encadenados mediante una función anónima / .done() regresa un objeto 
+                console.log(data.accessToken);
+                alert('ok')
+                $.unblockUI();
+                
+                localStorage.setItem('token', data.accessToken);
+                
+            }).fail((data)=> {
+                var message = data.responseJSON.detail;
+                this.error(message);
+                $.unblockUI();
+            });
+
 
         };
 
 
         // función que representa el clic del botón "Sign In" Por medio de los data-bin 
         UserLoginViewModel.prototype.ClickSignIn = function()  {
-            $.blockUI({messsage:null});
+            
             // 04 crear grupo de validación en el cual el validation capte atm los errores de todo el ViewModel (todos los observables que tengan validación)
-            var erros = ko.validation.group(this);
+            var errors = ko.validation.group({
+                username : this.username,
+                password : this.password
+            });
             if (errors().length > 0) {
                 errors.showAllMessages();
                 return;
             }
+
+            $.blockUI({messsage:null});
             // if(!this.username.isValid()) {
             //     //this.grouperror.showAllMessages();
             //     return;
@@ -196,7 +247,7 @@
                 //"password": "PjZtTEdqXLVOGh4"
                 }
             }).done((data) => {  // métodos encadenados mediante una función anónima / .done() regresa un objeto 
-                console.log(data.accessToken)
+                console.log(data.accessToken);
                 alert('ok')
                 $.unblockUI();
                 
