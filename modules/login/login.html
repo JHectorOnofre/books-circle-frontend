@@ -1,0 +1,96 @@
+<main class="bc-split-layout">
+    <!-- Left Side: Form Content -->
+    <section class="bc-split-content animate-fade-up">
+        <div class="mb-5">
+            <span class="bc-badge mb-3">Welcome to Bizzrro</span>
+            <!--h1 class="display-5 fw-bold text-dark">Join the club.</h1-->
+            <br> <img width="250px" src="https://www.joyeriasbizzarro.com/media/logo/stores/1/logo_slogan2x.png"
+                alt="BookCircle">
+            <p class="text-muted-bc fs-5 mt-2">Sign in to coordinate reading groups, vote on your next book, and share
+                progress with friends.</p>
+        </div>
+
+        <!-- Login Form mapped to /token -->
+        <form id="loginForm" class="bc-surface bc-surface-sm delay-100" data-bind="visible: !showRegister()">
+            <h2 class="bc-section-title" data-bind="text: label"></h2>
+
+            <div class="bc-form-group">
+                <label for="usernameInput" class="bc-label">Username</label>
+                <input type="text" id="usernameInput" class="bc-input" data-bind="textInput: username"
+                    placeholder="Enter your username" required>
+            </div>
+
+            <div class="bc-form-group mb-4">
+                <label for="passwordInput" class="bc-label">Password</label>
+                <input type="password" id="passwordInput" class="bc-input" data-bind="textInput: password"
+                    placeholder="Enter your password" required>
+            </div>
+
+            <div class="d-grid mt-2">
+                <button type="button" class="btn-bc-primary" id="loginBtn" data-bind="click: ClickSignIn">Sign
+                    In</button>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted-bc small">Don't have an account?
+                    <a href="#" class="text-dark fw-bold text-decoration-none" id="toggleRegister"
+                        data-bind="click: CreateAccount">Create one</a>
+                </p>
+            </div>
+
+            <!-- Alert container for error states -->
+            <div data-bind="if: has_error">
+                <div id="loginAlert" class="alert alert-danger mt-3" role="alert">
+                    <span data-bind="text: error"></span>
+                </div>
+            </div>
+
+        </form>
+
+        <!-- Register Form mapped to /auth/register -->
+        <form id="registerForm" class="bc-surface bc-surface-sm delay-200 mt-4" data-bind="visible: showRegister"
+            style="display: none;">
+            <h2 class="bc-section-title">Register</h2>
+
+            <div class="bc-form-group">
+                <label for="regFullName" class="bc-label">Full Name</label>
+                <input type="text" id="regFullName" class="bc-input" placeholder="Jane Doe" required
+                    data-bind="textInput: fullname">
+            </div>
+            <div class="bc-form-group">
+                <label for="regEmail" class="bc-label">Email</label>
+                <input type="email" id="regEmail" class="bc-input" placeholder="jane@example.com" required
+                    data-bind="textInput: email">
+            </div>
+            <div class="bc-form-group">
+                <label for="regUsername" class="bc-label">Username</label>
+                <input type="text" id="regUsername" class="bc-input" placeholder="janedoe99" required
+                    data-bind="textInput: username2">
+            </div>
+            <div class="bc-form-group mb-4">
+                <label for="regPassword" class="bc-label">Password</label>
+                <input type="password" id="regPassword" class="bc-input" placeholder="Minimum 8 characters" required
+                    data-bind="textInput: password2">
+            </div>
+
+            <div class="d-grid mt-2">
+                <button type="button" class="btn-bc-accent" id="registerBtn"
+                    data-bind="click: ClickCreateAccount">Create Account</button>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted-bc small">Already have an account? <a href="#"
+                        class="text-dark fw-bold text-decoration-none" id="toggleLogin"
+                        data-bind="click: SwitchToLogin">Sign in</a></p>
+            </div>
+        </form>
+
+    </section>
+
+    <!-- Right Side: Graphic Asset -->
+    <section class="bc-split-asset">
+        <img src="https://picsum.photos/seed/bookcircle/1200/1600"
+            alt="Abstract interior illustrating a peaceful reading space (placeholder)">
+    </section>
+
+</main>
