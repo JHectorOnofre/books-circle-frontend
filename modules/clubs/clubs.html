@@ -1,3 +1,82 @@
 <main class="bc-container animate-fade-up delay-100">
-    😎
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
+        <div>
+            <span class="bc-badge mb-3">Explore Communities</span>
+            <h1 class="display-6 fw-bold">Active Reading Clubs</h1>
+            <p class="text-muted-bc mb-0 fs-5 mt-2">Find your next group or start a new circle.</p>
+        </div>
+        <div class="mt-4 mt-md-0">
+            <!-- Trigger for Club Creation Modal -->
+            <button type="button" class="btn-bc-accent shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#createClubModal" id="openCreateModalBtn">
+                + Create New Club
+            </button>
+        </div>
+    </header>
+
+    <section class="bc-bento-grid" id="clubsGrid" data-bind="foreach: clubs">
+
+        <article class="bc-surface bc-col-4 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="bc-badge-neutral badge rounded-pill" data-bind="text: genre">Genre</span>
+                    <!-- ID representation (for KO it maps to id property) -->
+                    <small class="text-muted-bc" data-bind="text: '#' + id()">#1</small>
+                </div>
+
+                <h3 class="bc-section-title mb-2 text-truncate" data-bind="text: name">Club Name</h3>
+                <p class="text-muted-bc" data-bind="text: description">Description...</p>
+            </div>
+
+            <div class="mt-4 pt-4 border-top border-light d-flex justify-content-between align-items-center">
+                <span class="fs-6 fw-medium text-dark">
+                    <!-- Example of an organic data stat -->
+                    <span data-bind="text: memberCount">0</span> Members
+                </span>
+                <a class="btn-bc-outline btn-sm shadow-sm" data-bind="attr: { href: '#clubs/' + id() }">View Club</a>
+            </div>
+        </article>
+
+    </section>
 </main>
+
+
+<div class="modal fade" id="createClubModal" tabindex="-1" aria-labelledby="createClubModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <!-- Utilizing the bc-surface for premium modal style styling -->
+        <div class="modal-content bc-surface" style="border: none;">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-4 fw-bold" id="createClubModalLabel">Establish a New Club</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form id="createClubForm" data-bind="submit: createClub">
+
+                    <div class="bc-form-group">
+                        <label for="clubName" class="bc-label">Club Name</label>
+                        <input type="text" id="clubName" class="bc-input" placeholder="E.g., The Midnight Library"
+                            required data-bind="value: newClubName">
+                    </div>
+
+                    <div class="bc-form-group">
+                        <label for="clubGenre" class="bc-label">Favorite Genre</label>
+                        <input type="text" id="clubGenre" class="bc-input" placeholder="E.g., Historical Fiction"
+                            data-bind="value: newClubGenre">
+                    </div>
+
+                    <div class="bc-form-group mb-4">
+                        <label for="clubDescription" class="bc-label">Description</label>
+                        <textarea id="clubDescription" class="bc-input" rows="3"
+                            placeholder="What kind of readers are you looking for?"
+                            data-bind="value: newClubDescription"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top border-light pt-4">
+                        <button type="button" class="btn-bc-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-bc-primary" id="saveClubBtn">Create Club</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
