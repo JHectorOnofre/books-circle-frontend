@@ -20,15 +20,18 @@ function LoginViewModel() {
   self.hasError = ko.computed(() => !!self.error());
 }
 
+
 LoginViewModel.prototype.showRegister = function () {
   this.error(null);
   this.isRegister(true);
 };
 
+
 LoginViewModel.prototype.showLogin = function () {
   this.error(null);
   this.isRegister(false);
 };
+
 
 LoginViewModel.prototype.signIn = async function () {
   var self = this;
@@ -47,6 +50,7 @@ LoginViewModel.prototype.signIn = async function () {
     self.loading(false);
   }
 };
+
 
 LoginViewModel.prototype.createAccount = async function () {
   var self = this;

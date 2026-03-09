@@ -4,6 +4,8 @@ const Router = (() => {
   let _current = null;
 
   // Parse  #club/5  →  { route: 'club', params: { id: '5' } }
+
+  // _nombreFunsión = para funciones que sólo se usan en el mismo script donde son declaradas (scope)
   function _parse(hash) {
     const raw = (hash || '').replace(/^#\/?/, '');
     const parts = raw.split('/');
@@ -40,7 +42,7 @@ const Router = (() => {
   function current() { return _current; }
 
   // Bootstrap
-  window.addEventListener('hashchange', _dispatch);
+  window.addEventListener('hashchange', _dispatch); // para cambiar entre sitios, p. ej. url#clubs, entonces, manda a la func. _dispatch
   window.addEventListener('load',       _dispatch);
 
   return { on, navigate, current };

@@ -1,4 +1,8 @@
+/* Estructura básica de un módulo en JS
+  - se tiene una constante API que a su vez en una arrow function anónima
+  - al final se retorna todas las funciones que tienen dentro para dar salida a lo que el módulo vaya a consumir
 
+*/
 const API_BASE = 'http://localhost:5054';
 
 const Api = (() => {
@@ -7,13 +11,16 @@ const Api = (() => {
     return localStorage.getItem('token');
   }
 
+
   function setToken(token) {
     localStorage.setItem('token', token);
   }
 
+
   function clearToken() {
     localStorage.removeItem('token');
   }
+
 
   function isAuthenticated() {
     return !!getToken();
@@ -42,15 +49,15 @@ const Api = (() => {
         : JSON.stringify(body);
     }
 
-    const res = await fetch(`${API_BASE}${path}`, config);
-
-    if (res.status === 401) {
+    const res = await fetch(`${API_BASE}${path}`, config); // fetch en lugar de usar jQuery 
+    // validaciones
+    if (res.status === 401) { // no autenticado, ergo sin permiso para acceder al módulo. Redireccionar al login para autenticarse
       clearToken();
       Router.navigate('login');
       throw new Error('Unauthorized');
     }
 
-    if (!res.ok) {
+    if (!res.ok) { // si la respuesta está dentro de un rango de error 500...
       let detail = `HTTP ${res.status}`;
       try {
         const err = await res.json();
@@ -64,11 +71,13 @@ const Api = (() => {
     return res.json();
   }
 
+
   async function login(username, password) {
     const data = await request('POST', '/token', { username, password }, true);
     setToken(data.access_token || data.accessToken);
     return data;
   }
+
 
   async function register(payload) {
     const data = await request('POST', '/auth/register', payload);
@@ -76,11 +85,14 @@ const Api = (() => {
     return data;
   }
 
+
   function logout() {
     clearToken();
     Router.navigate('login');
   }
 
+
+  // Centralización de todos los llamados a la API (todas las necesarias para interactuar con ellas)
   function getClubs()          { return request('GET',  '/clubs'); }
   function getClub(id)         { return request('GET',  `/clubs/${id}`); }
   function createClub(payload) { return request('POST', '/clubs', payload); }

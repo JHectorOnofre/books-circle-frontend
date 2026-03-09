@@ -28,13 +28,16 @@ const App = (() => {
     return el;
   }
 
+
   function bindViewModel(el, vm) {
-    _currentBinding = vm;
+    _currentBinding = vm; 
     ko.applyBindings(vm, el);
   }
 
+
   // ── Route Handlers ─────────────────────────────────────────
 
+  // revisar autenticación 
   Router.on('login', () => {
     if (Api.isAuthenticated()) { Router.navigate('clubs'); return; }
 
@@ -43,10 +46,11 @@ const App = (() => {
     bindViewModel(el, vm);
   });
 
+  
   Router.on('clubs', async () => {
     const el = renderView('clubs');
     const vm = new ClubsViewModel();
-    bindViewModel(el, vm);
+    bindViewModel(el, vm); // renderiza la vista de clubs, instancia el viewModel y hace un binding entre la vista y el viewmodel
     await vm.load();
   });
 
