@@ -21,6 +21,7 @@ window.clubsViewModel = function (params) {
         }));
     };
 
+    
     self.createClub = async function () {
         console.log('create club');
         var response = await window.api.createClub({

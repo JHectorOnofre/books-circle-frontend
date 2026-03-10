@@ -11,20 +11,23 @@ var AppViewModel = function () {
         hasher.setHash('login');
     };
 
+    
+    //obetenemos el logeo del local storage (una vez logueado), lo hacemos mediante self.currentUser y lo metemos en un .observable
     self.currentUser = ko.observable(localStorage.getItem('token') ? 'User' : '');
 
-    // A small utility to load a module HTML/JS dynamically
+
+    // .loadComponete = Resgsitra el componente y obtiene el HTML y el JS mediante el $get
     self.loadComponent = function (name, path, params) {
-        if (ko.components.isRegistered(name)) {
-            self.currentComponent(name);
-            self.currentParams(params);
+        if (ko.components.isRegistered(name)) { // un component = conjunto entre una vista y un viewModel (para separar la app en módulos) | como React x VueJS
+            self.currentComponent(name); 
+            self.currentParams(params); 
         } else {
             $.blockUI({ message: null, overlayCSS: { backgroundColor: '#fff', opacity: 0.8 } });
-            $.get('modules/' + path + '.html', function (html) {
-                $.getScript('modules/' + path + '.js', function () {
+            $.get('modules/' + path + '.html', function (html) { // a. primero carga el html
+                $.getScript('modules/' + path + '.js', function () { // b. luego carga el Js
                     ko.components.register(name, {
                         template: html,
-                        viewModel: window[name + 'ViewModel']
+                        viewModel: window[name + 'ViewModel'] // "window" el objeto principal de JS
                     });
                     self.currentComponent(name);
                     self.currentParams(params);
@@ -40,7 +43,7 @@ var AppViewModel = function () {
 
 var app = new AppViewModel();
 
-// Crossroads routing configuration
+// Crossroads = routing configuration (por el cual se añaden las rutas, que pueden contener un parámetro), donde cargamos un componente 
 crossroads.addRoute('login', function () {
     app.loadComponent('login', 'login/login', {});
 });
@@ -65,6 +68,7 @@ crossroads.addRoute('', function () {
 
 crossroads.routed.add(console.log, console);
 
+
 // Hasher configuration
 function parseHash(newHash, oldHash) {
     crossroads.parse(newHash);
@@ -75,5 +79,5 @@ hasher.init();
 
 // Apply bindings to the root node
 $(document).ready(function () {
-    ko.applyBindings(app, document.getElementById('shell'));
+    ko.applyBindings(app, document.getElementById('shell')); //applyBindings = combina vista con el viewModel (appViewModel)
 });

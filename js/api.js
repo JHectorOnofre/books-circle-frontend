@@ -2,7 +2,12 @@
 
 const API_BASE_URL = 'http://localhost:5054';
 
-window.api = {
+
+/* objeto de Js en el que se puede acceder a varias funciones, en este caso Headers y fetchs
+  - en los Headers se puede establaecer si hay o no un Token, obteniéndolo del local storage. Si existe: se agrega a los Headers (+ token) 
+   
+*/
+window.api = { //
     // Helper to get headers
     getHeaders(isJson = true) {
         const headers = {};
@@ -18,16 +23,16 @@ window.api = {
 
     // Generic fetch wrapper for handling common responses (like 401 unauth)
     async fetchWithHandling(endpoint, options = {}) {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, options); // await fetch = versión nativa
 
         if (response.status === 401) {
             // Token might be expired or invalid
             localStorage.removeItem('token');
-            if (window.hasher) hasher.setHash('login');
+            if (window.hasher) hasher.setHash('login'); // función setHash para establecer la ruta por la cual se obtiene el componente según el response 
             throw new Error('Unauthorized');
         }
 
-        if (!response.ok) {
+        if (!response.ok) { // si responsee no es correcto => manejo de errores:
             let errorDetail = 'API Error';
             try {
                 const errorData = await response.json();
@@ -41,7 +46,7 @@ window.api = {
         // Return empty string or json depending on response
         if (response.status === 204) return null;
 
-        const contentType = response.headers.get("content-type");
+        const contentType = response.headers.get("content-type"); 
         if (contentType && contentType.indexOf("application/json") !== -1) {
             return response.json();
         } else {
@@ -76,9 +81,9 @@ window.api = {
 
     // --- CLUBS ---
 
-    async getClubs(skip = 0, limit = 100) {
-        return this.fetchWithHandling(`/clubs?skip=${skip}&limit=${limit}`, {
-            headers: this.getHeaders()
+    async getClubs(skip = 0, limit = 100) { //paginación skip, limit
+        return this.fetchWithHandling(`/clubs?skip=${skip}&limit=${limit}`, { //fetchWithHandling = método nativo equiparable a la función Ajax de Jquery
+            headers: this.getHeaders() 
         });
     },
 
